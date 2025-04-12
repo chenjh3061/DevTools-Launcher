@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DevTools Launcher Pro</title>
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2ecc71;
+            --danger-color: #e74c3c;
+            --dark-color: #2c3e50;
+            --light-color: #ecf0f1;
+            --gray-color: #bdc3c7;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            color: #333;
+            background-color: #f5f7fa;
+        }
+        
+        h1, h2 {
+            color: var(--dark-color);
+            margin-bottom: 15px;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--gray-color);
+        }
+        
+        .section {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .section:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+        }
+        
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            margin: 5px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+        
+        button:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        button.secondary {
+            background-color: var(--secondary-color);
+        }
+        
+        button.danger {
+            background-color: var(--danger-color);
+        }
+        
+        input, textarea, select {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border 0.2s;
+        }
+        
+        input:focus, textarea:focus, select:focus {
+            border-color: var(--primary-color);
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+        }
+        
+        textarea {
+            min-height: 200px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            line-height: 1.5;
+        }
+        
+        #log-container {
+            background: var(--dark-color);
+            color: var(--light-color);
+            padding: 15px;
+            border-radius: 6px;
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: 'Consolas', 'Monaco', monospace;
+            white-space: pre-wrap;
+            margin-top: 10px;
+        }
+        
+        .status {
+            padding: 6px 12px;
+            margin: 0 5px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+            display: inline-block;
+        }
+        
+        .status.running {
+            background: var(--secondary-color);
+            color: white;
+        }
+        
+        .status.stopped {
+            background: var(--danger-color);
+            color: white;
+        }
+        
+        .tool-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+            transition: background 0.2s;
+        }
+        
+        .tool-item:hover {
+            background: #f8f9fa;
+        }
+        
+        .tool-info {
+            flex: 1;
+            margin-right: 15px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .tool-name {
+            font-weight: 600;
+            margin-bottom: 3px;
+        }
+        
+        .tool-path {
+            color: #666;
+            font-size: 13px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .tool-actions button {
+            padding: 6px 12px;
+            margin-left: 5px;
+            font-size: 13px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: var(--dark-color);
+        }
+        
+        .tab-container {
+            margin-bottom: 20px;
+        }
+        
+        .tab-buttons {
+            display: flex;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 15px;
+        }
+        
+        .tab-button {
+            padding: 10px 20px;
+            background: none;
+            border: none;
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+            color: #666;
+            font-weight: 500;
+        }
+        
+        .tab-button.active {
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px;
+            background: var(--secondary-color);
+            color: white;
+            border-radius: 5px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+            transform: translateX(200%);
+            transition: transform 0.3s;
+            z-index: 1000;
+        }
+        
+        .notification.show {
+            transform: translateX(0);
+        }
+        
+        .notification.error {
+            background: var(--danger-color);
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>DevTools Launcher Pro</h1>
+        <div>
+            <span>Elasticsearch: <span id="es-status" class="status stopped">未运行</span></span>
+            <span>Kibana: <span id="kibana-status" class="status stopped">未运行</span></span>
+        </div>
+    </div>
+
+    <div class="grid-container">
+        <div class="section">
+            <h2>服务控制</h2>
+            <div class="form-group">
+                <button id="start-btn" class="secondary">启动所有服务</button>
+                <button id="stop-btn" class="danger">停止所有服务</button>
+            </div>
+            <div class="form-group">
+                <button id="start-es-btn">仅启动 Elasticsearch</button>
+                <button id="start-kibana-btn">仅启动 Kibana</button>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>服务状态</h2>
+            <div>
+                <p>Elasticsearch 端口: 9200 <span id="es-port-status" class="status stopped">关闭</span></p>
+                <p>Kibana 端口: 5601 <span id="kibana-port-status" class="status stopped">关闭</span></p>
+            </div>
+            <div class="form-group">
+                <button id="refresh-status-btn">刷新状态</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="tab-container">
+            <div class="tab-buttons">
+                <button class="tab-button active" data-tab="tools">工具管理</button>
+                <button class="tab-button" data-tab="config">配置管理</button>
+                <button class="tab-button" data-tab="logs">日志查看</button>
+            </div>
+            
+            <div id="tools-tab" class="tab-content active">
+                <h2>工具管理</h2>
+                <div class="form-group">
+                    <label class="form-label" for="tool-name">工具名称</label>
+                    <input id="tool-name" placeholder="例如: Redis" />
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="tool-path">可执行文件路径</label>
+                    <input id="tool-path" placeholder="例如: D:\ATools\redis\redis-server.exe" />
+                </div>
+                <div class="form-group">
+                    <button id="add-tool-btn">添加工具</button>
+                    <button id="browse-btn">浏览文件...</button>
+                </div>
+                <div id="tool-list"></div>
+            </div>
+            
+            <div id="config-tab" class="tab-content">
+                <h2>配置管理</h2>
+                <div class="form-group">
+                    <label class="form-label" for="config-selector">选择配置</label>
+                    <select id="config-selector">
+                        <option value="elasticsearch">Elasticsearch (elasticsearch.yml)</option>
+                        <option value="kibana">Kibana (kibana.yml)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <textarea id="config-editor" spellcheck="false"></textarea>
+                </div>
+                <div class="form-group">
+                    <button id="save-config-btn">保存配置</button>
+                    <button id="reload-config-btn">重新加载</button>
+                </div>
+            </div>
+            
+            <div id="logs-tab" class="tab-content">
+                <h2>日志查看</h2>
+                <div class="form-group">
+                    <label class="form-label" for="log-selector">选择日志</label>
+                    <select id="log-selector">
+                        <option value="elasticsearch">Elasticsearch 日志</option>
+                        <option value="kibana">Kibana 日志</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <button id="start-log-btn" class="secondary">开始监听</button>
+                    <button id="stop-log-btn" class="danger">停止监听</button>
+                    <button id="clear-log-btn">清空日志</button>
+                </div>
+                <pre id="log-container">日志将显示在这里...</pre>
+            </div>
+        </div>
+    </div>
+
+    <div id="notification" class="notification"></div>
+
+    <script>
+        const { ipcRenderer, shell } = require('electron');
+        
+        // Tab切换功能
+        document.querySelectorAll('.tab-button').forEach(button => {
+            button.addEventListener('click', () => {
+                document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+                
+                button.classList.add('active');
+                const tabId = button.getAttribute('data-tab') + '-tab';
+                document.getElementById(tabId).classList.add('active');
+            });
+        });
+        
+        // 显示通知
+        function showNotification(message, isError = false) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = isError ? 'notification error show' : 'notification show';
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+        
+        // 服务控制
+        document.getElementById('start-btn').addEventListener('click', () => {
+            ipcRenderer.send('start-all-services');
+            showNotification('正在启动所有服务...');
+        });
+        
+        document.getElementById('stop-btn').addEventListener('click', () => {
+            ipcRenderer.send('stop-all-services');
+            showNotification('正在停止所有服务...');
+        });
+        
+        document.getElementById('start-es-btn').addEventListener('click', () => {
+            ipcRenderer.send('start-service', 'elasticsearch');
+            showNotification('正在启动 Elasticsearch...');
+        });
+        
+        document.getElementById('start-kibana-btn').addEventListener('click', () => {
+            ipcRenderer.send('start-service', 'kibana');
+            showNotification('正在启动 Kibana...');
+        });
+        
+        document.getElementById('refresh-status-btn').addEventListener('click', () => {
+            ipcRenderer.send('refresh-status');
+            showNotification('正在刷新服务状态...');
+        });
+        
+        // 工具管理
+        document.getElementById('add-tool-btn').addEventListener('click', () => {
+            const name = document.getElementById('tool-name').value.trim();
+            const path = document.getElementById('tool-path').value.trim();
+            
+            if (!name || !path) {
+                showNotification('请填写工具名称和路径', true);
+                return;
+            }
+            
+            ipcRenderer.send('add-tool', { name, path });
+            document.getElementById('tool-name').value = '';
+            document.getElementById('tool-path').value = '';
+        });
+        
+        document.getElementById('browse-btn').addEventListener('click', () => {
+            ipcRenderer.send('open-file-dialog');
+        });
+        
+        // 配置管理
+        document.getElementById('save-config-btn').addEventListener('click', () => {
+            const configType = document.getElementById('config-selector').value;
+            const content = document.getElementById('config-editor').value;
+            ipcRenderer.send('save-config', { configType, content });
+        });
+        
+        document.getElementById('reload-config-btn').addEventListener('click', () => {
+            const configType = document.getElementById('config-selector').value;
+            ipcRenderer.send('load-config', configType);
+            showNotification('配置已重新加载');
+        });
+        
+        document.getElementById('config-selector').addEventListener('change', (e) => {
+            ipcRenderer.send('load-config', e.target.value);
+        });
+        
+        // 日志管理
+        document.getElementById('start-log-btn').addEventListener('click', () => {
+            const logType = document.getElementById('log-selector').value;
+            ipcRenderer.send('start-logs', logType);
+            showNotification(`开始监听 ${logType} 日志`);
+        });
+        
+        document.getElementById('stop-log-btn').addEventListener('click', () => {
+            ipcRenderer.send('stop-logs');
+            showNotification('已停止监听日志');
+        });
+        
+        document.getElementById('clear-log-btn').addEventListener('click', () => {
+            document.getElementById('log-container').textContent = '';
+            showNotification('日志已清空');
+        });
+        
+        // IPC事件监听
+        ipcRenderer.on('service-status', (event, { service, isRunning }) => {
+            const element = document.getElementById(`${service}-status`);
+            const portElement = document.getElementById(`${service}-port-status`);
+            
+            if (element) {
+                element.textContent = isRunning ? '运行中' : '未运行';
+                element.className = isRunning ? 'status running' : 'status stopped';
+            }
+            
+            if (portElement) {
+                portElement.textContent = isRunning ? '开放' : '关闭';
+                portElement.className = isRunning ? 'status running' : 'status stopped';
+            }
+        });
+        
+        ipcRenderer.on('log-output', (event, log) => {
+            const logContainer = document.getElementById('log-container');
+            logContainer.textContent += log;
+            logContainer.scrollTop = logContainer.scrollHeight;
+        });
+        
+        ipcRenderer.on('config-content', (event, content) => {
+            document.getElementById('config-editor').value = content;
+        });
+        
+        ipcRenderer.on('tool-list', (event, tools) => {
+            const toolList = document.getElementById('tool-list');
+            toolList.innerHTML = '';
+            
+            tools.forEach(tool => {
+                const toolItem = document.createElement('div');
+                toolItem.className = 'tool-item';
+                toolItem.innerHTML = `
+                    <div class="tool-info">
+                        <div class="tool-name">${tool.name}</div>
+                        <div class="tool-path">${tool.path}</div>
+                    </div>
+                    <div class="tool-actions">
+                        <button class="edit-tool" data-id="${tool.name}">编辑</button>
+                        <button class="start-tool" data-id="${tool.name}">启动</button>
+                        <button class="delete-tool danger" data-id="${tool.name}">删除</button>
+                    </div>
+                `;
+                toolList.appendChild(toolItem);
+            });
+            
+            // 添加工具操作事件
+            document.querySelectorAll('.edit-tool').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const toolName = e.target.getAttribute('data-id');
+                    ipcRenderer.send('edit-tool', toolName);
+                });
+            });
+            
+            document.querySelectorAll('.start-tool').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const toolName = e.target.getAttribute('data-id');
+                    ipcRenderer.send('start-tool', toolName);
+                    showNotification(`正在启动 ${toolName}`);
+                });
+            });
+            
+            document.querySelectorAll('.delete-tool').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const toolName = e.target.getAttribute('data-id');
+                    if (confirm(`确定要删除 ${toolName} 吗？`)) {
+                        ipcRenderer.send('delete-tool', toolName);
+                    }
+                });
+            });
+        });
+        
+        ipcRenderer.on('notification', (event, { message, isError }) => {
+            showNotification(message, isError);
+        });
+        
+        ipcRenderer.on('selected-file', (event, path) => {
+            if (path) {
+                document.getElementById('tool-path').value = path;
+            }
+        });
+        
+        ipcRenderer.on('edit-tool-data', (event, tool) => {
+            document.getElementById('tool-name').value = tool.name;
+            document.getElementById('tool-path').value = tool.path;
+        });
+        
+        // 初始化加载
+        ipcRenderer.send('load-tools');
+        ipcRenderer.send('load-config', 'elasticsearch');
+        ipcRenderer.send('refresh-status');
+    </script>
+</body>
+</html>

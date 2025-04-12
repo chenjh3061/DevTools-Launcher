@@ -1,0 +1,12 @@
+{
+    "tools": [
+      {
+        "name": "Elasticsearch",
+        "path": "D:\\ATools\\elasticsearch-7.17.22-windows-x86_64\\elasticsearch-7.17.22\\bin"
+      },
+      {
+        "name": "Kibana",
+        "path": "D:\\ATools\\elasticsearch-7.17.22-windows-x86_64\\kibana-7.17.22-windows-x86_64\\bin"
+      }
+    ]
+  }
