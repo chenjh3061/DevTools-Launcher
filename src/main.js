@@ -1,3 +1,4 @@
+// 导入模块（CommonJS语法）
 const { app, BrowserWindow, ipcMain, dialog } = require('electron');
 const path = require('path');
 const { exec, spawn } = require('child_process');
@@ -220,7 +221,8 @@ function createWindow() {
         minHeight: 600,
         webPreferences: {
             nodeIntegration: true,
-            contextIsolation: false
+            contextIsolation: false,
+            //preload: path.join(__dirname, 'preload.js'),
         },
         icon: path.join(__dirname, 'assets', 'icon.png')
     });
@@ -268,6 +270,12 @@ app.whenReady().then(() => {
             createWindow();
         }
     });
+
+    app.on('window-all-closed', () => {
+        if(process.platform !== 'darwin') {
+            app.quit()
+        }
+    })
 });
 
 // 应用关闭
@@ -279,6 +287,74 @@ app.on('window-all-closed', () => {
 });
 
 // IPC通信处理
+// 获取工具列表
+ipcMain.handle('get-tools', () => {
+    return getTools();
+});
+
+// 加载配置
+ipcMain.handle('load-config', async (event, configName) => {
+    try {
+        const configPath = getConfigPath(configName);
+        const content = readConfig(configName);
+        return {
+            success: true,
+            path: configPath,
+            content
+        };
+    } catch (error) {
+        return {
+            success: false,
+            error: error.message
+        };
+    }
+});
+
+// 检查端口状态
+ipcMain.handle('check-port', async (event, port) => {
+    return await checkPort(port);
+});
+
+// 启动服务
+ipcMain.handle('start-service', async (event, serviceName) => {
+    try {
+        await startService(serviceName);
+        // 启动后等待一段时间再检查状态
+        setTimeout(() => {
+            checkAllServices();
+        }, 3000);
+        return { success: true };
+    } catch (error) {
+        return { success: false, error: error.message };
+    }
+});
+
+// 停止服务
+ipcMain.handle('stop-service', async (event, serviceName) => {
+    try {
+        await stopService(serviceName);
+        // 停止后立即检查状态
+        setTimeout(() => {
+            checkAllServices();
+        }, 1000);
+        return { success: true };
+    } catch (error) {
+        return { success: false, error: error.message };
+    }
+});
+
+// 启动日志监控
+ipcMain.handle('start-log', async (event, serviceName) => {
+    try {
+        if (mainWindow) {
+            startLogListener(serviceName, mainWindow);
+        }
+        return { success: true };
+    } catch (error) {
+        return { success: false, error: error.message };
+    }
+});
+
 ipcMain.on('start-all-services', async () => {
     try {
         await startService('elasticsearch');

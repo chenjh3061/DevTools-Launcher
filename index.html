@@ -6,49 +6,489 @@
     <title>DevTools Launcher Pro</title>
     <style>
         :root {
-            --primary-color: #3498db;
-            --secondary-color: #2ecc71;
-            --danger-color: #e74c3c;
-            --dark-color: #2c3e50;
-            --light-color: #ecf0f1;
-            --gray-color: #bdc3c7;
+            --primary-color: #1890ff;
+            --primary-hover: #40a9ff;
+            --secondary-color: #52c41a;
+            --secondary-hover: #73d13d;
+            --danger-color: #ff4d4f;
+            --danger-hover: #ff7875;
+            --warning-color: #faad14;
+            --dark-color: #262626;
+            --text-color: #262626;
+            --text-secondary: #8c8c8c;
+            --border-color: #d9d9d9;
+            --bg-color: #f0f2f5;
+            --card-bg: #ffffff;
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.06);
+            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
+            --radius-sm: 6px;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+        }
+        
+        * {
+            box-sizing: border-box;
         }
         
         body {
-            font-family: 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            max-width: 1000px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            color: var(--text-color);
+            background: var(--bg-color);
+            line-height: 1.6;
+            font-size: 14px;
+        }
+        
+        /* 容器布局 */
+        .app-container {
+            max-width: 1200px;
             margin: 0 auto;
-            padding: 20px;
-            color: #333;
-            background-color: #f5f7fa;
+            padding: 24px;
         }
         
-        h1, h2 {
-            color: var(--dark-color);
-            margin-bottom: 15px;
+        /* 路由相关样式 */
+        .page {
+            animation: fadeIn 0.3s ease-in-out;
         }
         
-        .header {
+        .page-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid var(--gray-color);
+            margin-bottom: 24px;
         }
         
-        .section {
-            background: white;
-            border-radius: 10px;
+        .back-btn {
+            padding: 8px 16px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--text-color);
+            font-size: 14px;
+        }
+        
+        .back-btn:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+        
+        /* 首页样式 */
+        .welcome-section {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
+            border-radius: var(--radius-lg);
+            padding: 48px 32px;
+            margin-bottom: 32px;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .welcome-title {
+            font-size: 32px;
+            font-weight: 600;
+            margin: 0 0 8px 0;
+            letter-spacing: -0.5px;
+        }
+        
+        .welcome-subtitle {
+            font-size: 16px;
+            margin: 0;
+            opacity: 0.9;
+            font-weight: 400;
+        }
+        
+        .welcome-stats {
+            display: flex;
+            gap: 24px;
+        }
+        
+        .stat-card {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius-md);
             padding: 20px;
-            margin-bottom: 25px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            transition: transform 0.2s, box-shadow 0.2s;
+            backdrop-filter: blur(10px);
+            min-width: 120px;
+        }
+        
+        .stat-number {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+        
+        /* 服务面板样式 */
+        .services-panel {
+            background: var(--card-bg);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            margin-bottom: 32px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-color);
+        }
+        
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+        
+        .panel-header h3 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+        
+        .refresh-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+        
+        .refresh-btn:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+        
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        
+        .service-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 20px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        .service-card:hover {
+            box-shadow: var(--shadow-md);
+            border-color: var(--primary-color);
+        }
+        
+        .service-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--bg-color);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-color);
+        }
+        
+        .service-info {
+            flex: 1;
+        }
+        
+        .service-info h4 {
+            margin: 0 0 4px 0;
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+        
+        .service-info p {
+            margin: 0 0 8px 0;
+            color: var(--text-secondary);
+            font-size: 13px;
+        }
+        
+        .service-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--text-secondary);
+        }
+        
+        .status-indicator.running {
+            background: var(--secondary-color);
+            box-shadow: 0 0 0 2px rgba(82, 196, 26, 0.2);
+        }
+        
+        .status-indicator.stopped {
+            background: var(--danger-color);
+        }
+        
+        .status-text {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+        
+        .service-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .action-btn {
+            padding: 6px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            background: var(--card-bg);
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .action-btn.start-btn {
+            color: var(--secondary-color);
+            border-color: var(--secondary-color);
+        }
+        
+        .action-btn.start-btn:hover {
+            background: var(--secondary-color);
+            color: white;
+        }
+        
+        .action-btn.stop-btn {
+            color: var(--danger-color);
+            border-color: var(--danger-color);
+        }
+        
+        .action-btn.stop-btn:hover {
+            background: var(--danger-color);
+            color: white;
+        }
+        
+        .bulk-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            padding-top: 16px;
+            border-top: 1px solid var(--border-color);
+        }
+        
+        .bulk-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .bulk-btn.start-all {
+            background: var(--secondary-color);
+            color: white;
+        }
+        
+        .bulk-btn.start-all:hover {
+            background: var(--secondary-hover);
+        }
+        
+        .bulk-btn.stop-all {
+            background: var(--danger-color);
+            color: white;
+        }
+        
+        .bulk-btn.stop-all:hover {
+            background: var(--danger-hover);
+        }
+        
+        /* 功能模块样式 */
+        .features-section {
+            margin-bottom: 32px;
+        }
+        
+        .features-section h3 {
+            margin: 0 0 24px 0;
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .feature-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--primary-color);
+        }
+        
+        .feature-icon {
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
+            border-radius: var(--radius-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            margin-bottom: 16px;
+        }
+        
+        .feature-card h4 {
+            margin: 0 0 8px 0;
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+        
+        .feature-card p {
+            margin: 0 0 16px 0;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+        
+        .feature-arrow {
+            position: absolute;
+            top: 24px;
+            right: 24px;
+            font-size: 20px;
+            color: var(--text-secondary);
+            transition: all 0.2s;
+        }
+        
+        .feature-card:hover .feature-arrow {
+            color: var(--primary-color);
+            transform: translateX(4px);
+        }
+        
+        /* 路由动画效果 */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* 头部样式 */
+        .header {
+            background: var(--card-bg);
+            border-bottom: 1px solid var(--border-color);
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow-sm);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header h1 {
+            margin: 0;
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text-color);
+            letter-spacing: -0.3px;
+        }
+        
+        .nav-menu {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .nav-link {
+            padding: 8px 16px;
+            text-decoration: none;
+            color: var(--text-secondary);
+            border-radius: var(--radius-sm);
+            transition: all 0.2s;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .nav-link:hover {
+            color: var(--primary-color);
+            background: rgba(24, 144, 255, 0.06);
+        }
+        
+        .nav-link.active {
+            color: var(--primary-color);
+            background: rgba(24, 144, 255, 0.1);
+        }
+        
+        .header-status {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+        
+        .header-status span {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+        
+        /* 通用组件样式 */
+        .section {
+            background: var(--card-bg);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-color);
+            transition: all 0.2s;
         }
         
         .section:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .section h2, .section h3 {
+            margin: 0 0 16px 0;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+        
+        .section h2 {
+            font-size: 18px;
+        }
+        
+        .section h3 {
+            font-size: 16px;
         }
         
         .grid-container {
@@ -57,161 +497,262 @@
             gap: 20px;
         }
         
+        /* 按钮样式 */
         button {
-            background-color: var(--primary-color);
+            background: var(--primary-color);
             color: white;
             border: none;
-            padding: 10px 18px;
-            margin: 5px;
-            border-radius: 6px;
+            padding: 8px 16px;
+            margin: 4px;
+            border-radius: var(--radius-sm);
             cursor: pointer;
             transition: all 0.2s;
             font-weight: 500;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
         }
         
         button:hover {
-            opacity: 0.9;
+            background: var(--primary-hover);
             transform: translateY(-1px);
+            box-shadow: var(--shadow-sm);
         }
         
         button:active {
             transform: translateY(0);
         }
         
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
         button.secondary {
-            background-color: var(--secondary-color);
+            background: var(--secondary-color);
+        }
+        
+        button.secondary:hover {
+            background: var(--secondary-hover);
         }
         
         button.danger {
-            background-color: var(--danger-color);
+            background: var(--danger-color);
         }
         
+        button.danger:hover {
+            background: var(--danger-hover);
+        }
+        
+        button.outline {
+            background: transparent;
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
+        }
+        
+        button.outline:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        /* 表单样式 */
         input, textarea, select {
             width: 100%;
-            padding: 10px;
+            padding: 12px;
             margin: 8px 0;
-            border: 1px solid #ddd;
-            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
             font-size: 14px;
-            transition: border 0.2s;
+            transition: all 0.2s;
+            background: var(--card-bg);
+            color: var(--text-color);
+            box-sizing: border-box;
         }
         
         input:focus, textarea:focus, select:focus {
             border-color: var(--primary-color);
             outline: none;
-            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+            box-shadow: 0 0 0 3px rgba(24, 144, 255, 0.1);
         }
         
         textarea {
             min-height: 200px;
-            font-family: 'Consolas', 'Monaco', monospace;
+            font-family: 'JetBrains Mono', 'Consolas', 'Monaco', monospace;
+            line-height: 1.5;
+            resize: vertical;
+        }
+        
+        /* 日志容器样式 */
+        #log-container {
+            background: #1a1a1a;
+            color: #e5e5e5;
+            padding: 16px;
+            border-radius: var(--radius-md);
+            max-height: 400px;
+            overflow-y: auto;
+            font-family: 'JetBrains Mono', 'Consolas', 'Monaco', monospace;
+            white-space: pre-wrap;
+            margin-top: 10px;
+            border: 1px solid var(--border-color);
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+            font-size: 13px;
             line-height: 1.5;
         }
         
-        #log-container {
-            background: var(--dark-color);
-            color: var(--light-color);
-            padding: 15px;
-            border-radius: 6px;
-            max-height: 300px;
-            overflow-y: auto;
-            font-family: 'Consolas', 'Monaco', monospace;
-            white-space: pre-wrap;
-            margin-top: 10px;
+        #log-container::-webkit-scrollbar {
+            width: 8px;
         }
         
+        #log-container::-webkit-scrollbar-track {
+            background: #2a2a2a;
+            border-radius: 4px;
+        }
+        
+        #log-container::-webkit-scrollbar-thumb {
+            background: #555;
+            border-radius: 4px;
+        }
+        
+        #log-container::-webkit-scrollbar-thumb:hover {
+            background: #666;
+        }
+        
+        /* 状态样式 */
         .status {
-            padding: 6px 12px;
+            padding: 4px 8px;
             margin: 0 5px;
-            border-radius: 20px;
-            font-size: 14px;
+            border-radius: var(--radius-sm);
+            font-size: 12px;
             font-weight: 500;
-            display: inline-block;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
         
         .status.running {
-            background: var(--secondary-color);
-            color: white;
+            background: rgba(82, 196, 26, 0.1);
+            color: #52c41a;
+            border: 1px solid rgba(82, 196, 26, 0.2);
         }
         
         .status.stopped {
-            background: var(--danger-color);
-            color: white;
+            background: rgba(255, 77, 79, 0.1);
+            color: #ff4d4f;
+            border: 1px solid rgba(255, 77, 79, 0.2);
         }
         
+        .status.unknown {
+            background: rgba(250, 173, 20, 0.1);
+            color: #faad14;
+            border: 1px solid rgba(250, 173, 20, 0.2);
+        }
+        
+        /* 工具项样式 */
         .tool-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 12px;
-            border-bottom: 1px solid #eee;
-            transition: background 0.2s;
+            padding: 16px;
+            border-bottom: 1px solid var(--border-color);
+            transition: all 0.2s;
+            background: var(--card-bg);
         }
         
         .tool-item:hover {
-            background: #f8f9fa;
+            background: rgba(24, 144, 255, 0.04);
+            transform: translateX(2px);
+        }
+        
+        .tool-item:last-child {
+            border-bottom: none;
         }
         
         .tool-info {
             flex: 1;
-            margin-right: 15px;
+            margin-right: 16px;
             overflow: hidden;
-            text-overflow: ellipsis;
         }
         
         .tool-name {
             font-weight: 600;
-            margin-bottom: 3px;
+            margin-bottom: 4px;
+            color: var(--text-color);
+            font-size: 15px;
         }
         
         .tool-path {
-            color: #666;
+            color: var(--text-secondary);
             font-size: 13px;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+            font-family: 'JetBrains Mono', 'Consolas', monospace;
+        }
+        
+        .tool-actions {
+            display: flex;
+            gap: 8px;
         }
         
         .tool-actions button {
             padding: 6px 12px;
-            margin-left: 5px;
             font-size: 13px;
+            margin: 0;
         }
         
         .form-group {
-            margin-bottom: 15px;
+            margin-bottom: 16px;
         }
         
         .form-label {
             display: block;
-            margin-bottom: 5px;
+            margin-bottom: 6px;
             font-weight: 500;
-            color: var(--dark-color);
+            color: var(--text-color);
+            font-size: 14px;
         }
         
+        /* 标签页样式 */
         .tab-container {
-            margin-bottom: 20px;
+            margin-bottom: 24px;
         }
         
         .tab-buttons {
             display: flex;
-            border-bottom: 1px solid #ddd;
-            margin-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 20px;
+            background: var(--card-bg);
+            border-radius: var(--radius-md) var(--radius-md) 0 0;
+            padding: 0 4px;
         }
         
         .tab-button {
-            padding: 10px 20px;
+            padding: 12px 20px;
             background: none;
             border: none;
-            border-bottom: 3px solid transparent;
+            border-bottom: 2px solid transparent;
             cursor: pointer;
-            color: #666;
+            color: var(--text-secondary);
             font-weight: 500;
+            transition: all 0.2s;
+            border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+            margin: 4px 2px 0 2px;
         }
         
         .tab-button.active {
             color: var(--primary-color);
             border-bottom-color: var(--primary-color);
+            background: rgba(24, 144, 255, 0.06);
+        }
+        
+        .tab-button:hover:not(.active) {
+            background: rgba(0, 0, 0, 0.04);
+            color: var(--text-color);
         }
         
         .tab-content {
@@ -222,87 +763,77 @@
             display: block;
         }
         
+        /* 通知样式 */
         .notification {
             position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 15px;
-            background: var(--secondary-color);
+            top: 24px;
+            right: 24px;
+            padding: 16px 20px;
+            border-radius: var(--radius-md);
             color: white;
-            border-radius: 5px;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
-            transform: translateX(200%);
-            transition: transform 0.3s;
+            font-weight: 500;
             z-index: 1000;
+            transform: translateX(400px);
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-lg);
+            backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 300px;
         }
         
         .notification.show {
             transform: translateX(0);
         }
         
+        .notification.success {
+            background: linear-gradient(135deg, #52c41a, #73d13d);
+        }
+        
         .notification.error {
-            background: var(--danger-color);
+            background: linear-gradient(135deg, #ff4d4f, #ff7875);
+        }
+        
+        .notification.info {
+            background: linear-gradient(135deg, #1890ff, #40a9ff);
+        }
+        
+        .notification.warning {
+            background: linear-gradient(135deg, #faad14, #ffc53d);
         }
     </style>
 </head>
 <body>
     <div class="header">
         <h1>DevTools Launcher Pro</h1>
-        <div>
-            <span>Elasticsearch: <span id="es-status" class="status stopped">未运行</span></span>
-            <span>Kibana: <span id="kibana-status" class="status stopped">未运行</span></span>
+        <div class="nav-menu">
+            <a href="#/" class="nav-link active">首页</a>
+            <a href="#/tools" class="nav-link">工具管理</a>
+            <a href="#/config" class="nav-link">配置管理</a>
+            <a href="#/logs" class="nav-link">日志查看</a>
+            <a href="#/other" class="nav-link">其他工具</a>
         </div>
+       
+        
     </div>
-
-    <div class="grid-container">
+    <!-- 路由容器 -->
+    <div id="app-container" class="app-container">
+        <!-- 路由内容将在这里动态渲染 -->
+    </div>
+    
+    <!-- 服务控制面板（固定在页面底部） -->
+    <div class="service-control-panel">
         <div class="section">
-            <h2>服务控制</h2>
+            <h3>快速服务控制</h3>
             <div class="form-group">
                 <button id="start-btn" class="secondary">启动所有服务</button>
                 <button id="stop-btn" class="danger">停止所有服务</button>
-            </div>
-            <div class="form-group">
-                <button id="start-es-btn">仅启动 Elasticsearch</button>
-                <button id="start-kibana-btn">仅启动 Kibana</button>
-            </div>
-        </div>
-
-        <div class="section">
-            <h2>服务状态</h2>
-            <div>
-                <p>Elasticsearch 端口: 9200 <span id="es-port-status" class="status stopped">关闭</span></p>
-                <p>Kibana 端口: 5601 <span id="kibana-port-status" class="status stopped">关闭</span></p>
-            </div>
-            <div class="form-group">
                 <button id="refresh-status-btn">刷新状态</button>
             </div>
         </div>
     </div>
-
-    <div class="section">
-        <div class="tab-container">
-            <div class="tab-buttons">
-                <button class="tab-button active" data-tab="tools">工具管理</button>
-                <button class="tab-button" data-tab="config">配置管理</button>
-                <button class="tab-button" data-tab="logs">日志查看</button>
-            </div>
-            
-            <div id="tools-tab" class="tab-content active">
-                <h2>工具管理</h2>
-                <div class="form-group">
-                    <label class="form-label" for="tool-name">工具名称</label>
-                    <input id="tool-name" placeholder="例如: Redis" />
-                </div>
-                <div class="form-group">
-                    <label class="form-label" for="tool-path">可执行文件路径</label>
-                    <input id="tool-path" placeholder="例如: D:\ATools\redis\redis-server.exe" />
-                </div>
-                <div class="form-group">
-                    <button id="add-tool-btn">添加工具</button>
-                    <button id="browse-btn">浏览文件...</button>
-                </div>
-                <div id="tool-list"></div>
-            </div>
+            <div id="tool-list"></div>
             
             <div id="config-tab" class="tab-content">
                 <h2>配置管理</h2>
@@ -343,18 +874,33 @@
 
     <div id="notification" class="notification"></div>
 
+    <script type="module">
+        import { debounce, throttle } from './utils.js';
+
+        var a = 0;
+        let domainButton = document.getElementById('domain')
+        domainButton.addEventListener('click', debounce(() => {
+            domainButton.textContent = `奇怪按钮 ${a++}`;
+            console.log(a);
+          }, 500));
+    
+    </script>
+
     <script>
         const { ipcRenderer, shell } = require('electron');
         
-        // Tab切换功能
-        document.querySelectorAll('.tab-button').forEach(button => {
-            button.addEventListener('click', () => {
-                document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
-                document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-                
-                button.classList.add('active');
-                const tabId = button.getAttribute('data-tab') + '-tab';
-                document.getElementById(tabId).classList.add('active');
+        // 导入路由模块
+        const { initRouter } = require('./src/routes');
+        
+        // 初始化路由系统
+        const router = initRouter(document.getElementById('app-container'));
+        
+        // 导航链接事件
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const path = link.getAttribute('href').replace('#', '');
+                router.navigate(path);
             });
         });
         
